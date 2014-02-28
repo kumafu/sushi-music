@@ -2,13 +2,23 @@ var rail;
 
 $(function() {
 	$('#start-button').click(function(){
-		$(this).text("Stop");
+		if (rail.stat == 0){
+			$(this).text("Stop");
+			rail.start();
+		}
+		else{
+			$(this).text("Start");
+			rail.stop();
+		}
 	});
 
 	init();
 });
 
 function init(){
-	rail = new Rail();
-}
+	var canvas = document.getElementById('main-canvas');
+	var ctx = canvas.getContext('2d');
 
+	rail = new Rail();
+	rail.init(ctx);
+}
