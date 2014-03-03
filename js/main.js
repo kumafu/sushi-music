@@ -12,6 +12,12 @@ $(function() {
 		}
 	});
 
+	$('button.dish-button').click(function(){
+		var link = rail.getSetLink();
+		var id = $(this).val();
+		link.dish = {color: setting.dishcolor[id]};
+	});
+
 	init();
 });
 
@@ -21,4 +27,14 @@ function init(){
 
 	rail = new Rail();
 	rail.init(ctx);
+}
+
+var setting = {
+	'dishcolor' : [
+		'#fcc',
+		'#cfc',
+		'#ccf',
+		'#ffc',
+		'#fcf'
+	]
 }

@@ -19,6 +19,9 @@ function Rail() {
 	this.offsetX = 80;
 	this.offsetY = 80;
 
+	this.setPos = 0.05;
+	this.sensorPos = 0.25;
+
 	this.ctx;
 }
 
@@ -42,7 +45,7 @@ Rail.prototype.init = function(_ctx) {
 
 Rail.prototype.start = function() {
 	var self = this;
-	this.timer = setInterval(function(){self.loop()}, 50);
+	this.timer = setInterval(function(){self.loop()}, 20);
 	this.stat = 1;
 	this.preTime = new Date().getTime();
 }
@@ -59,15 +62,24 @@ Rail.prototype.loop = function() {
 	this.curTime += (now - this.preTime);
 	$("#time-input").val(this.curTime);
 
-	for (var i in this.linkList){
+	for (var i = this.linkNum - 1; i > -1;--i){
 		var link = this.linkList[i];
-		var timeOffset = this.curTime / 10;
+		var timeOffset = this.curTime / 300;
 		link.localTime = ((timeOffset + parseInt(i)) % this.linkNum) / this.linkNum;
 		this.calcLinkPos(link);
 		link.draw();
 	}
 
+	this.ctx.strokeRect(this.offsetX + this.totalDist * this.setPos, this.offsetY - 20, 5, 40);
+	this.ctx.strokeRect(this.offsetX + this.totalDist * this.sensorPos, this.offsetY - 20, 5, 40);
+
 	this.preTime = now;
+}
+
+Rail.prototype.getSetLink = function(){
+	var timeOffset = this.curTime / 300;
+	var i = this.linkNum - 1 - parseInt((this.linkNum + timeOffset - this.setPos * this.linkNum) % this.linkNum);
+	return this.linkList[i];
 }
 
 Rail.prototype.calcLinkPos = function(_link) {

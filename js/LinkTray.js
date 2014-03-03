@@ -12,6 +12,8 @@ function LinkTray() {
 	this.localTime = 0;
 	this.size = 10;
 
+	this.dish = null;
+
 	this.ctx;
 }
 
@@ -20,7 +22,15 @@ LinkTray.prototype.init = function(_ctx) {
 }
 
 LinkTray.prototype.draw = function() {
+	this.ctx.save();
+	if (this.dish == null){
+		this.ctx.fillStyle = 'rgb(128, 128, 128)';
+	}
+	else{
+		this.ctx.fillStyle = this.dish.color;
+	}
 	this.ctx.beginPath();
 	this.ctx.arc(this.x, this.y, this.size, 0, Math.PI*2, false);
-	this.ctx.stroke();
+	this.ctx.fill();
+	this.ctx.restore();
 }

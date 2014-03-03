@@ -18,9 +18,22 @@
 	<input id='linknum-input' value='200'></input>
 	<br>
 	<input id='time-input' value=''></input>
+	<br>
+	<button class='dish-button' name="dish-pen" value="0">id:1</button>
+	<button class='dish-button' name="dish-pen" value="1">id:2</button>
+	<button class='dish-button' name="dish-pen" value="2">id:3</button>
+	<button class='dish-button' name="dish-pen" value="3">id:4</button>
+	<button class='dish-button' name="dish-pen" value="4">id:5</button>
 </p>
 <canvas id='main-canvas' width='800' height='600'>
 </canvas>
 
+    <script>
+    	var i = 0;
+    	$('.dish-button').each(function(){
+    		$(this).css('background-color',setting.dishcolor[i]);
+    		i++;
+    	});
+    </script>
 </body>
 </html>
