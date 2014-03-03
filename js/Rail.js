@@ -21,6 +21,7 @@ function Rail() {
 
 	this.setPos = 0.05;
 	this.sensorPos = 0.25;
+	this.speed = 300;
 
 	this.ctx;
 }
@@ -31,16 +32,18 @@ Rail.prototype.init = function(_ctx) {
 	this.ctx.strokeRect(this.offsetX,this.offsetY,this.width,this.height);
 	this.totalDist = this.width * 2 + this.height * 2;
 
-	// this.ctx.beginPath();
-	// this.ctx.arc(70, 70, 60, 0, Math.PI*2, false);
-	// this.ctx.stroke();
-	this.linkNum = parseInt($("#linknum-input").val());
+	this.setParam();
 
-	for (var i = 0; i < this.linkNum; ++i){
+	for (var i = this.linkNum - 1; i > -1; --i){
 		var link = new LinkTray();
 		link.init(this.ctx);
 		this.linkList.push(link);
+		link.num = i;
 	}
+}
+Rail.prototype.setParam = function() {
+	this.linkNum = parseInt($("#linknum-input").val());
+	this.speed = parseInt($("#speed-input").val());
 }
 
 Rail.prototype.start = function() {
@@ -62,13 +65,16 @@ Rail.prototype.loop = function() {
 	this.curTime += (now - this.preTime);
 	$("#time-input").val(this.curTime);
 
+	var timeOffset = this.curTime / this.speed;
 	for (var i = this.linkNum - 1; i > -1;--i){
 		var link = this.linkList[i];
-		var timeOffset = this.curTime / 300;
 		link.localTime = ((timeOffset + parseInt(i)) % this.linkNum) / this.linkNum;
 		this.calcLinkPos(link);
 		link.draw();
 	}
+	var sensoredID = parseInt(this.linkNum + timeOffset - this.sensorPos * this.linkNum) % this.linkNum;
+
+	this.getSensor(this.linkList[this.linkNum - sensoredID - 1]);
 
 	this.ctx.strokeRect(this.offsetX + this.totalDist * this.setPos, this.offsetY - 20, 5, 40);
 	this.ctx.strokeRect(this.offsetX + this.totalDist * this.sensorPos, this.offsetY - 20, 5, 40);
@@ -77,9 +83,41 @@ Rail.prototype.loop = function() {
 }
 
 Rail.prototype.getSetLink = function(){
-	var timeOffset = this.curTime / 300;
+	var timeOffset = this.curTime / this.speed;
 	var i = this.linkNum - 1 - parseInt((this.linkNum + timeOffset - this.setPos * this.linkNum) % this.linkNum);
 	return this.linkList[i];
+}
+
+Rail.prototype.getSensor = function(link){
+	if (link.dish == null) return;
+
+	if (link.dish.id == 0){
+		if (link.sensored){
+			console.log("X : " + link.num + " / " + this.curTime / this.speed + " / null");
+			$.ajax({
+				type: "GET",
+				url: 'del'+link.num+"-null.js"
+			});
+		}
+		link.dish = null;
+		link.sensored = false;
+	}
+	else if (link.dish.id != 0 && !link.sensored){
+		console.log("O : " + link.num + " / " + this.curTime / this.speed + " / " + link.dish.id);
+		$.ajax({
+			type: "GET",
+			url: 'osc'+link.num+"-"+link.dish.id + ".js"
+		});
+		link.sensored = true;
+	}
+}
+
+Rail.prototype.resetDish = function(){
+	for (var i in this.linkList){
+		if (this.linkList[i].dish != null){
+			this.linkList[i].dish = {id:0, color: setting.dishcolor[0]};
+		}
+	}
 }
 
 Rail.prototype.calcLinkPos = function(_link) {

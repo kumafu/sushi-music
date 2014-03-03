@@ -11,8 +11,10 @@ function LinkTray() {
 	this.angle = 0;
 	this.localTime = 0;
 	this.size = 10;
+	this.num = 0;
 
 	this.dish = null;
+	this.sensored = false;
 
 	this.ctx;
 }

@@ -15,7 +15,15 @@ $(function() {
 	$('button.dish-button').click(function(){
 		var link = rail.getSetLink();
 		var id = $(this).val();
-		link.dish = {color: setting.dishcolor[id]};
+		link.dish = {id: id, color: setting.dishcolor[id]};
+	});
+
+	$('#reset-button').click(function(){
+		rail.resetDish();
+	});
+
+	$('#speed-input').change(function(){
+		rail.setParam();
 	});
 
 	init();
@@ -31,6 +39,7 @@ function init(){
 
 var setting = {
 	'dishcolor' : [
+		'#ccc',
 		'#fcc',
 		'#cfc',
 		'#ccf',
